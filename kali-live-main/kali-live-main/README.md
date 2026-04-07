@@ -1,14 +1,24 @@
-# Kali-Live Build-Scripts
+# Sentinel OS Live Build-Scripts
 
-_`live-build` configuration for Kali ISO images._
+_`live-build` configuration for Sentinel OS ISO images._
 
-These are the same [build-scripts](https://gitlab.com/kalilinux/build-scripts) that the [Kali team](https://www.kali.org/) uses to generate the official Kali Linux base images, found here: [kali.org/get-kali/](https://www.kali.org/get-kali/).
+Note: This workspace has been adapted as the Sentinel OS build configuration — a CLI-only, security-focused distribution derived from these live-build scripts. The default variant has been switched to `variant-minimal` so builds produce a terminal-first image without graphical desktops or X11.
 
-_Build your Kali Linux image today!_
+To build the Sentinel CLI-only ISO (default):
+
+```console
+$ ./build.sh
+```
+
+If you need a GUI variant for testing, you can still build other variants by explicitly passing `--variant <name>` (but GUI meta-packages are commented out in this fork).
+
+These build scripts are derived from the upstream Kali build-scripts, adapted and branded as **Sentinel OS**.
+
+_Build your Sentinel OS image today!_
 
 - - -
 
-These images can be used to live boot into Kali, from such a USB/CD/DVD/sdCard, as well offers a basic installation. For more customization during setup, see [kali-installer](https://gitlab.com/kalilinux/build-scripts/kali-installer).
+These images can be used to live boot into Sentinel OS, from such a USB/CD/DVD/sdCard, and also offer a basic installation. For more customization during setup, see [kali-installer](https://gitlab.com/kalilinux/build-scripts/kali-installer).
 
 - [kali-installer](https://gitlab.com/kalilinux/build-scripts/kali-installer) uses [Simple-CDD](https://wiki.debian.org/Simple-CDD) _(which is a wrapper for [debian-cd](https://wiki.debian.org/debian-cd))_
 - [kali-live](https://gitlab.com/kalilinux/build-scripts/kali-live) uses [live-build](https://live-team.pages.debian.net/live-manual/html/live-manual/index.en.html)

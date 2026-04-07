@@ -1,0 +1,3 @@
+#!/bin/sh
+exec sentinel-gui firefox-esr "$@"
+

@@ -3,11 +3,11 @@
 ##
 #if ARCHITECTURES amd64 i386
 hyperv-daemons
-virtualbox-guest-x11
+# virtualbox-guest-x11 (GUI) removed for CLI-only build
 #endif
 #if ARCHITECTURES amd64 i386 arm64
-open-vm-tools-desktop
+# open-vm-tools-desktop (GUI) removed for CLI-only build
 #endif
 qemu-guest-agent
-spice-vdagent
-xrdp
+# spice-vdagent (GUI-ish/VM integration) removed for web-pentest-only build
+#xrdp (remote desktop) removed for web-pentest-only build

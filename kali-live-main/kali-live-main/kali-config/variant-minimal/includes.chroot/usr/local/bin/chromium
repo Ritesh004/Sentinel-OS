@@ -1,0 +1,4 @@
+#!/bin/sh
+# Start Chromium with Sentinel's on-demand minimal X session when run from TTY.
+exec sentinel-gui chromium "$@"
+

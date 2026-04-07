@@ -1,0 +1,27 @@
+#!/bin/sh
+set -eu
+
+# Ensure Sentinel OS boots to a console target by default (CLI-first).
+if [ -e /lib/systemd/system/multi-user.target ]; then
+  mkdir -p /etc/systemd/system
+  ln -sf /lib/systemd/system/multi-user.target /etc/systemd/system/default.target
+fi
+
+# Branding
+echo "sentinel-os" > /etc/hostname
+if [ -e /etc/hosts ] && ! grep -qE '^[[:space:]]*127\.0\.1\.1[[:space:]]+sentinel-os([[:space:]]|$)' /etc/hosts; then
+  printf "\n127.0.1.1\tsentinel-os\n" >> /etc/hosts
+fi
+
+# Make sure we don't accidentally enable a display manager if one is pulled in.
+for dm in gdm3 lightdm sddm lxdm; do
+  if [ -e "/lib/systemd/system/${dm}.service" ] || [ -e "/etc/init.d/${dm}" ]; then
+    update-rc.d -f "$dm" remove >/dev/null 2>&1 || true
+    systemctl disable "$dm" >/dev/null 2>&1 || true
+  fi
+done
+
+# Ensure our launcher is executable (live-build preserves perms, but be safe).
+chmod 0755 /usr/local/bin/sentinel-gui /usr/local/bin/sentinel-xsession 2>/dev/null || true
+chmod 0755 /usr/local/bin/firefox /usr/local/bin/chromium /usr/local/bin/burpsuite 2>/dev/null || true
+chmod 0755 /usr/local/bin/sentinel-firefox /usr/local/bin/sentinel-chromium /usr/local/bin/sentinel-burp 2>/dev/null || true

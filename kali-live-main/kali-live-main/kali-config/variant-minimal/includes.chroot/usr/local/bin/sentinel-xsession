@@ -1,0 +1,17 @@
+#!/bin/sh
+set -eu
+
+cmd="${SENTINEL_GUI_CMD:-}"
+if [ -z "$cmd" ]; then
+  cmd="xterm"
+fi
+
+# Start a tiny window manager, run the requested GUI app, then exit X when it closes.
+openbox-session >/dev/null 2>&1 &
+obpid=$!
+
+sh -lc "$cmd" >/dev/null 2>&1 &
+apppid=$!
+
+wait "$apppid" || true
+kill "$obpid" >/dev/null 2>&1 || true

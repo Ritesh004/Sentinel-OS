@@ -1,0 +1,28 @@
+#!/bin/sh
+set -eu
+
+if [ "$#" -lt 1 ]; then
+  echo "Usage: sentinel-gui <command> [args...]" >&2
+  exit 2
+fi
+
+if [ -n "${DISPLAY:-}" ]; then
+  exec "$@"
+fi
+
+if ! command -v xinit >/dev/null 2>&1; then
+  echo "ERROR: X is not installed (missing xinit). Rebuild with X packages." >&2
+  exit 1
+fi
+
+# Pass the command to the X session helper in a shell-safe way.
+SENTINEL_GUI_CMD=""
+for arg in "$@"; do
+  # printf %q is a bashism; keep POSIX sh by escaping conservatively.
+  # We use single quotes around each arg, escaping any embedded single quotes.
+  esc=$(printf "%s" "$arg" | sed "s/'/'\\\\''/g")
+  SENTINEL_GUI_CMD="${SENTINEL_GUI_CMD}'${esc}' "
+done
+export SENTINEL_GUI_CMD
+
+exec xinit /usr/local/bin/sentinel-xsession -- :0 -nolisten tcp

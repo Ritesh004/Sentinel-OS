@@ -1,0 +1,29 @@
+# Sentinel OS (variant-minimal)
+# CLI-first system focused on web application penetration testing.
+
+# Base usability
+ca-certificates
+xdg-utils
+
+# Minimal X stack (no full desktop environment)
+xserver-xorg-core
+xserver-xorg-input-all
+xserver-xorg-video-all
+xinit
+openbox
+dbus-x11
+x11-utils
+x11-xserver-utils
+xauth
+fonts-dejavu-core
+
+# Fallback terminal in X (useful if a GUI app fails to start)
+xterm
+
+# Web pentesting toolset (Kali meta-package)
+# See: https://www.kali.org/tools/kali-meta/
+kali-tools-web
+
+# GUI apps commonly needed for web testing
+firefox-esr
+burpsuite
