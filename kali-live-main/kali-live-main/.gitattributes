@@ -1,0 +1,8 @@
+* text=auto
+
+# Keep Linux build scripts/hooks POSIX-friendly on Windows checkouts
+*.sh      text eol=lf
+auto/*    text eol=lf
+*.chroot  text eol=lf
+*.cfg     text eol=lf
+*.list.*  text eol=lf

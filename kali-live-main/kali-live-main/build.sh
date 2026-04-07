@@ -8,7 +8,7 @@ set -o pipefail # Bashism
 # Kali's default values
 KALI_DIST="kali-rolling"
 KALI_VERSION=""
-KALI_VARIANT="default"
+KALI_VARIANT="minimal"
 TARGET_DIR="$(dirname $0)/images"
 TARGET_SUBDIR=""
 SUDO="sudo"
@@ -38,9 +38,9 @@ target_image_name() {
     IMAGE_EXT="img"
   fi
   if [ "$KALI_VARIANT" = "default" ]; then
-    echo "${TARGET_SUBDIR:+$TARGET_SUBDIR/}kali-linux-$KALI_VERSION-live-$KALI_ARCH.$IMAGE_EXT"
+    echo "${TARGET_SUBDIR:+$TARGET_SUBDIR/}sentinel-os-$KALI_VERSION-live-$KALI_ARCH.$IMAGE_EXT"
   else
-    echo "${TARGET_SUBDIR:+$TARGET_SUBDIR/}kali-linux-$KALI_VERSION-live-$KALI_VARIANT-$KALI_ARCH.$IMAGE_EXT"
+    echo "${TARGET_SUBDIR:+$TARGET_SUBDIR/}sentinel-os-$KALI_VERSION-live-$KALI_VARIANT-$KALI_ARCH.$IMAGE_EXT"
   fi
 }
 
@@ -267,4 +267,4 @@ debug "Moving files"
 run_and_log mv -f $IMAGE_NAME $TARGET_DIR/$(target_image_name $KALI_ARCH)
 run_and_log mv -f "$BUILD_LOG" $TARGET_DIR/$(target_build_log $KALI_ARCH)
 
-echo -e "\n***\nGENERATED KALI IMAGE: $(readlink -f $TARGET_DIR/$(target_image_name $KALI_ARCH))\n***"
+echo -e "\n***\nGENERATED SENTINEL OS IMAGE: $(readlink -f $TARGET_DIR/$(target_image_name $KALI_ARCH))\n***"
