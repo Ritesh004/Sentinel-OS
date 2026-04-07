@@ -56,20 +56,9 @@ pkg_installed() {
 }
 
 configure_terminal() {
-    while read -r desktop terminal; do
-        pkg_installed kali-desktop-$desktop || continue
-        echo "INFO: setting x-terminal-emulator alternative to '$terminal'"
-        update-alternatives --verbose --set x-terminal-emulator /usr/bin/$terminal || true
-        break
-    done <<END
-e17   terminology
-gnome gnome-terminal.wrapper
-i3    kitty
-kde   konsole
-lxde  lxterminal
-mate  mate-terminal.wrapper
-xfce  qterminal
-END
+    # CLI-only build: graphical desktop metapackages (kali-desktop-*) are
+    # intentionally not installed. Skip configuring x-terminal-emulator.
+    echo "INFO: CLI-only build, skipping configure_terminal"
 }
 
 # Avoid configuring multiple times in case persistence is enabled

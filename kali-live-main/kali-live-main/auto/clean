@@ -9,6 +9,10 @@ rm -fv \
   config/common \
   config/source \
   config/package-lists/live.list.chroot
+  \
+  # Remove GUI-specific assets if present
+  config/bootloaders/grub-pc/splash.png \
+  config/bootloaders/grub-pc/theme.cfg || true
 
 if [ -e config/hooks/ ]; then
   find config/hooks/ -type l \

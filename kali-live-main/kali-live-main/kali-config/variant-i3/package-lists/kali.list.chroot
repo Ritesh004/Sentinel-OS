@@ -4,11 +4,10 @@
 
 ## Live images always want these
 kali-linux-core
-kali-desktop-live
+# kali-desktop-live (removed for CLI-only Sentinel OS)
 
-## Graphical desktop
-##   For the complete list see: https://www.kali.org/docs/general-use/metapackages/
-kali-desktop-i3
+## Non-graphical variant: remove desktop meta-packages to keep CLI-only
+## (originally: kali-desktop-i3)
 
 ## Metapackages
 ##   You can customize the set of Kali metapackages (groups of tools) to install
