@@ -4,14 +4,14 @@ This repository contains the **Sentinel OS** live-build configuration: a **CLI-f
 
 ## Build (recommended entrypoint)
 
-Run the Sentinel wrapper script (keeps the upstream layout intact for reliability):
+Run the Sentinel wrapper script:
 
 ```bash
 ./sentinel-build.sh
 ```
 
-Artifacts are written under `kali-live-main/kali-live-main/images/` and are named `sentinel-os-...`.
+Artifacts are written under `sentinel-live-main/sentinel-live-main/images/` and are named `sentinel-os-...`.
 
-## Upstream layout (kept intentionally)
+## Layout notes
 
-Internally, the build system still uses the upstream directory names like `kali-config/` and `kali-live-main/` because many scripts and live-build conventions assume them. We changed **branding, ISO labels, boot menus, and output filenames** to Sentinel OS, while keeping the underlying structure stable so ISO builds don’t break.
+The project is derived from upstream Kali live-build scripts, but directory names in this repo are now Sentinel OS themed.

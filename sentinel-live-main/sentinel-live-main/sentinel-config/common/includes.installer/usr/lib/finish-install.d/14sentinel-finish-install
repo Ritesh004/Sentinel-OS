@@ -1,0 +1,6 @@
+#!/bin/sh
+
+# Run the sentinel-finish-install script to configure the target system
+cp /sentinel-finish-install /target/
+in-target /sentinel-finish-install || true
+rm -f /target/sentinel-finish-install
