@@ -12,6 +12,8 @@ Run the Sentinel wrapper script:
 
 Artifacts are written under `sentinel-live-main/sentinel-live-main/images/` and are named `sentinel-os-...`.
 
+**Source-only checkouts have no `boot/isolinux/` or `boot/grub/efi.img`.** You cannot turn the Git tree into a bootable ISO with `xorriso` alone; live-build must run first. If you already have a live-build `binary/` tree (advanced), `./pack-iso-from-tree.sh <that-directory>` validates paths and invokes `xorriso` with the usual hybrid options.
+
 ## Layout notes
 
 The project is derived from upstream Kali live-build scripts, but directory names in this repo are now Sentinel OS themed.
