@@ -136,11 +136,12 @@ lb config noauto \
   --firmware-binary true \
   --firmware-chroot true \
   --mirror-bootstrap "$kali_mirror" \
+  --mirror-chroot "$kali_mirror" \
   --mirror-debian-installer "$kali_mirror" \
   --mirror-binary "$public_kali_mirror" \
   --iso-application "Sentinel OS" \
   --iso-publisher "Sentinel" \
-  --iso-volume "Sentinel Live" \
+  --iso-volume "Sentinel-Live" \
   --linux-packages linux-image \
   --memtest memtest86+ \
   --bootappend-live "boot=live components noeject" \
@@ -150,3 +151,18 @@ lb config noauto \
   --win32-loader false \
   $lb_opts \
   "$@"
+
+# Ubuntu (and similar) ship /etc/live/build.conf with LB_MIRROR_* pointing at the host
+# distro (e.g. archive.ubuntu.com). That is sourced after lb config and breaks bootstrapping
+# kali-rolling (debootstrap then requests .../ubuntu/dists/kali-rolling/Release). Append
+# Kali mirror assignments so they override when config/bootstrap is sourced.
+if [ -f config/bootstrap ]; then
+  cat >> config/bootstrap <<EOF
+
+# Sentinel OS (auto/config): override host live-build defaults for Kali derivative
+LB_MIRROR_BOOTSTRAP="$kali_mirror"
+LB_MIRROR_CHROOT="$kali_mirror"
+LB_MIRROR_DEBIAN_INSTALLER="$kali_mirror"
+LB_MIRROR_BINARY="$public_kali_mirror"
+EOF
+fi

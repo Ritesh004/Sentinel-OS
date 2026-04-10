@@ -247,6 +247,15 @@ fi
 require_live_build
 require_package debootstrap "1.0.97"
 
+if [ ! -r /usr/share/keyrings/kali-archive-keyring.gpg ]; then
+  echo "ERROR: Kali archive keyring is missing: /usr/share/keyrings/kali-archive-keyring.gpg" >&2
+  echo "debootstrap cannot verify Kali mirrors without it. On Ubuntu, download the newest" >&2
+  echo "kali-archive-keyring_*_all.deb from:" >&2
+  echo "  http://http.kali.org/kali/pool/main/k/kali-archive-keyring/" >&2
+  echo "then: sudo dpkg -i kali-archive-keyring_*_all.deb" >&2
+  exit 1
+fi
+
 # We need root rights at some point
 if [ "$(whoami)" != "root" ]; then
   if ! which $SUDO >/dev/null; then

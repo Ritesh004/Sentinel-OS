@@ -10,6 +10,8 @@ Run the Sentinel wrapper script:
 ./sentinel-build.sh
 ```
 
+On **Ubuntu**, install the [Kali archive keyring](http://http.kali.org/kali/pool/main/k/kali-archive-keyring/) (`kali-archive-keyring_*_all.deb`) so debootstrap can verify Kali’s `Release` file; the build script exits with a hint if it is missing.
+
 Artifacts are written under `sentinel-live-main/sentinel-live-main/images/` and are named `sentinel-os-...`.
 
 **Source-only checkouts have no `boot/isolinux/` or `boot/grub/efi.img`.** You cannot turn the Git tree into a bootable ISO with `xorriso` alone; live-build must run first. If you already have a live-build `binary/` tree (advanced), `./pack-iso-from-tree.sh <that-directory>` validates paths and invokes `xorriso` with the usual hybrid options.
