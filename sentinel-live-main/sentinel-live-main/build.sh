@@ -126,6 +126,29 @@ require_package() {
   debug "$pkg version: $pkg_version"
 }
 
+# Kali repackages live-build as 1:20250225+kali3 (epoch 1). Ubuntu/Debian use epoch 0
+# (e.g. 3.0~a57-1ubuntu…), which dpkg incorrectly reports as "older" than any epoch-1
+# version. Only enforce the Kali floor on Kali; elsewhere require that live-build is installed.
+require_live_build() {
+  local pkg_version=
+  pkg_version=$(dpkg-query -f '${Version}' -W live-build 2>/dev/null || true)
+  if [ -z "$pkg_version" ]; then
+    echo "ERROR: You need live-build, but it is not installed" >&2
+    exit 1
+  fi
+  case "${SENTINEL_OS_ID:-}" in
+    kali)
+      if dpkg --compare-versions "$pkg_version" lt "1:20250225+kali3"; then
+        echo "ERROR: You need live-build (>= 1:20250225+kali3), you have $pkg_version" >&2
+        exit 1
+      fi
+      ;;
+    *)
+      debug "live-build version (non-Kali host, no Kali-specific floor): $pkg_version"
+      ;;
+  esac
+}
+
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 # Change directory into where the script is
@@ -213,7 +236,15 @@ fi
 if [ ! -d "$(dirname $0)/sentinel-config/variant-$KALI_VARIANT" ]; then
   echo "ERROR: Unknown variant of Sentinel OS live configuration: $KALI_VARIANT" >&2
 fi
-require_package live-build "1:20250225+kali3"
+
+SENTINEL_OS_ID=""
+if [ -r /usr/lib/os-release ]; then
+  # shellcheck source=/dev/null
+  . /usr/lib/os-release
+  SENTINEL_OS_ID="${ID:-}"
+fi
+
+require_live_build
 require_package debootstrap "1.0.97"
 
 # We need root rights at some point
