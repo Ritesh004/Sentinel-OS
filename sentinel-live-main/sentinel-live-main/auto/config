@@ -130,14 +130,21 @@ if [ -n "$enable_pu" ]; then
     > config/archives/kali-proposed-updates.list.binary
 fi
 
+# Ubuntu's live-build package lags Debian/Kali and omits several lb config switches (LP #1999932).
+bootappend_failsafe='boot=live components noeject memtest noapic noapm nodma nomce nolapic nomodeset nosmp vga=normal'
+lb_modern_extras=()
+if lb config --help 2>&1 | grep -qF -- '--debootstrap-options'; then
+  lb_modern_extras+=(--debootstrap-options "--keyring=/usr/share/keyrings/kali-archive-keyring.gpg")
+  lb_modern_extras+=(--updates false)
+  lb_modern_extras+=(--bootappend-live-failsafe "$bootappend_failsafe")
+fi
+
 lb config noauto \
   --apt-indices=false \
   --distribution "$dist" \
   --debian-installer-distribution "$dist" \
   --archive-areas "main contrib non-free non-free-firmware" \
-  --debootstrap-options "--keyring=/usr/share/keyrings/kali-archive-keyring.gpg" \
   --keyring-packages kali-archive-keyring \
-  --updates false \
   --backports false \
   --source false \
   --firmware-binary true \
@@ -152,12 +159,29 @@ lb config noauto \
   --linux-packages linux-image \
   --memtest memtest86+ \
   --bootappend-live "boot=live components noeject" \
-  --bootappend-live-failsafe "boot=live components noeject memtest noapic noapm nodma nomce nolapic nomodeset nosmp vga=normal" \
   --bootappend-install "net.ifnames=0" \
   --security false \
   --win32-loader false \
+  "${lb_modern_extras[@]}" \
   $lb_opts \
   "$@"
+
+# Stock Ubuntu live-build: inject options lb config does not accept (see lb_modern_extras above).
+if [ "${#lb_modern_extras[@]}" -eq 0 ]; then
+  mkdir -p config
+  printf '%s\n' '' \
+    '# Sentinel OS: Ubuntu live-build lacks --debootstrap-options (LP #1999932)' \
+    'DEBOOTSTRAP_OPTIONS="--keyring=/usr/share/keyrings/kali-archive-keyring.gpg"' \
+    >>config/common
+  if [ -f config/bootstrap ]; then
+    cat >>config/bootstrap <<EOF
+
+# Sentinel OS: Ubuntu live-build lacks --updates / --bootappend-live-failsafe
+LB_UPDATES="false"
+LB_BOOTAPPEND_LIVE_FAILSAFE="$bootappend_failsafe"
+EOF
+  fi
+fi
 
 # Ubuntu (and similar) ship /etc/live/build.conf with LB_MIRROR_* pointing at the host
 # distro (e.g. archive.ubuntu.com). That is sourced after lb config and breaks bootstrapping
