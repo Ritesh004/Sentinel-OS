@@ -63,12 +63,19 @@ fi
 
 # live-build doesn't work if --parent-debian-distribution is unknown of
 # debian-cd => we have to put a symlink so that it deals with kali like sid
-if [ ! -e ${LIVE_BUILD:-/usr/share/live/build}/data/debian-cd/$dist ]; then
-  if [ -w ${LIVE_BUILD:-/usr/share/live/build}/data/debian-cd ]; then
-    ln -sf sid ${LIVE_BUILD:-/usr/share/live/build}/data/debian-cd/$dist
+lb_cd_dir="${LIVE_BUILD:-/usr/share/live/build}/data/debian-cd"
+lb_cd_link="$lb_cd_dir/$dist"
+if [ ! -e "$lb_cd_link" ]; then
+  if [ -w "$lb_cd_dir" ]; then
+    ln -sf sid "$lb_cd_link"
+  elif [ "$(id -u)" -eq 0 ]; then
+    ln -sf sid "$lb_cd_link"
+  elif [ -n "${SUDO:-}" ] && command -v "${SUDO%% *}" >/dev/null 2>&1; then
+    # Ubuntu/Debian: system path is root-owned; build.sh exports SUDO for this step
+    $SUDO ln -sf sid "$lb_cd_link"
   else
-    echo "ERROR: Run this first:"
-    echo "ln -sf sid ${LIVE_BUILD:-/usr/share/live/build}/data/debian-cd/$dist"
+    echo "ERROR: live-build needs a one-time symlink (run as root):" >&2
+    echo "  sudo ln -sf sid $lb_cd_link" >&2
     exit 1
   fi
 fi

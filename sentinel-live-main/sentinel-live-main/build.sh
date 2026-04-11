@@ -266,6 +266,7 @@ if [ "$(whoami)" != "root" ]; then
 else
   SUDO="" # We're already root
 fi
+export SUDO
 debug "SUDO: $SUDO"
 
 IMAGE_NAME="$(image_name $KALI_ARCH)"
@@ -290,6 +291,28 @@ mkdir -pv $TARGET_DIR/$TARGET_SUBDIR
 
 # Don't quit on any errors now
 set +e
+
+# live-build needs .../data/debian-cd/<codename> -> sid; path is root-owned on Ubuntu.
+# Do this here (not inside auto/config under run_and_log) so sudo can use the real TTY.
+if [ -r .mirror ]; then
+  kali_mirror_build=$(tr -d '\r\n' < .mirror)
+else
+  kali_mirror_build=http://kali.download/kali
+fi
+lb_kali_codename=$(wget -q -O- "$kali_mirror_build/dists/$KALI_CONFIG_DIST/Release" | awk '/^Codename:/ {print $2}')
+if [ -z "$lb_kali_codename" ]; then
+  echo "ERROR: Could not resolve Kali codename from $kali_mirror_build (network or .mirror?)" >&2
+  failure
+fi
+lb_cd_link="${LIVE_BUILD:-/usr/share/live/build}/data/debian-cd/$lb_kali_codename"
+if [ ! -e "$lb_cd_link" ]; then
+  lb_cd_dir="${LIVE_BUILD:-/usr/share/live/build}/data/debian-cd"
+  if [ -w "$lb_cd_dir" ]; then
+    ln -sf sid "$lb_cd_link" || failure
+  else
+    $SUDO ln -sf sid "$lb_cd_link" || failure
+  fi
+fi
 
 debug "Stage 1/2 - Config" # ./auto/config
 # Run auto/config explicitly: some hosts (e.g. Ubuntu) ship live-build such that a bare
