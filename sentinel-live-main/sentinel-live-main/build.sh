@@ -212,7 +212,8 @@ if [ "$HOST_ARCH" != "$KALI_ARCH" ]; then
   esac
 fi
 
-# Build parameters for lb config
+# Build parameters for lb config / auto/config (distribution name before +pu suffix)
+KALI_CONFIG_DIST="$KALI_DIST"
 KALI_CONFIG_OPTS="--distribution $KALI_DIST -- --variant $KALI_VARIANT"
 if [ -n "$OPT_pu" ]; then
   KALI_CONFIG_OPTS="$KALI_CONFIG_OPTS --proposed-updates"
@@ -291,7 +292,12 @@ mkdir -pv $TARGET_DIR/$TARGET_SUBDIR
 set +e
 
 debug "Stage 1/2 - Config" # ./auto/config
-run_and_log lb config -a $KALI_ARCH $KALI_CONFIG_OPTS "$@"
+# Run auto/config explicitly: some hosts (e.g. Ubuntu) ship live-build such that a bare
+# `lb config` with only -a/--distribution/--variant does not apply our full Kali options,
+# leaving /etc/live/build.conf mirrors in effect — debootstrap then hits
+# archive.ubuntu.com/.../dists/kali-rolling (invalid).
+run_and_log bash auto/config -a "$KALI_ARCH" --distribution "$KALI_CONFIG_DIST" -- \
+  --variant "$KALI_VARIANT" ${OPT_pu:+"--proposed-updates"} "$@"
 [ $? -eq 0 ] || failure
 
 debug "Stage 2/2 - Build"
